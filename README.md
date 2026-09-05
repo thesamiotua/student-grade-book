@@ -4,12 +4,14 @@ A command-line tool to manage students and their grades, backed by a
 MySQL database.
 
 ## Features
+
 - Add students
 - Log grades per subject for a student
 - View a student's grades and their calculated average
 - List all students
 
 ## Requirements
+
 - Python 3.7+
 - MySQL Server
 - `mysql-connector-python` package
@@ -17,6 +19,7 @@ MySQL database.
 ## Setup
 
 1. Install and start MySQL, then create the database and a dedicated user:
+
 ```sql
 CREATE DATABASE grade_book;
 CREATE USER 'gradebook_user'@'localhost' IDENTIFIED BY 'yourpassword';
@@ -25,11 +28,13 @@ FLUSH PRIVILEGES;
 ```
 
 2. Load the schema:
+
 ```bash
 mysql -u gradebook_user -p grade_book < schema.sql
 ```
 
 3. Set up a Python virtual environment and install dependencies:
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
@@ -40,14 +45,39 @@ pip install mysql-connector-python
    own username/password if different from the defaults.
 
 ## Usage
+
 ```bash
 python3 gradebook.py
 ```
 
 ## Project structure
+
 ```
 student-grade-book/
 ├── gradebook.py   # main script
 ├── schema.sql     # database schema
 └── README.md
 ```
+
+## Git workflow used for the delete feature
+
+This feature was built using a feature branch and pull request workflow,
+rather than committing directly to `main`.
+
+- `git checkout -b feature/delete-student` — created a new branch off
+  `main` to build the feature in isolation, so `main` stayed stable and
+  deployable while the feature was in progress.
+- `git add` / `git commit` — staged and committed changes in small,
+  logical steps (the database function first, then the CLI wiring),
+  so the history reads as a clear sequence of what changed and why.
+- `git push -u origin feature/delete-student` — pushed the branch to
+  GitHub and set up tracking, so future pushes/pulls on this branch
+  know where to sync.
+- **Pull request** — opened on GitHub to review the changes before
+  merging into `main`, and to get a visual diff of everything the
+  branch changed.
+- **Merge** — merged the pull request via GitHub's UI, combining the
+  feature branch's history into `main`.
+- `git checkout main` / `git pull origin main` — switched back to
+  `main` locally and pulled down the merge, so the local copy matches
+  what's now on GitHub.
