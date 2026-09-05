@@ -100,6 +100,22 @@ def calculate_average(student_id):
     conn.close()
     return result
 
+def delete_student(student_id):
+    """
+    Delete a student and all of their grades.
+    Grades must be deleted first because of the foreign key
+    constraint (grades.student_id references students.id) —
+    MySQL will reject deleting a student that still has grades
+    pointing to them.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM grades WHERE student_id = %s", (student_id,))
+    cursor.execute("DELETE FROM students WHERE id = %s", (student_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 
 def print_students():
     students = list_students()
