@@ -100,6 +100,22 @@ def calculate_average(student_id):
     conn.close()
     return result
 
+def delete_student(student_id):
+    """
+    Delete a student and all of their grades.
+    Grades must be deleted first because of the foreign key
+    constraint (grades.student_id references students.id) —
+    MySQL will reject deleting a student that still has grades
+    pointing to them.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM grades WHERE student_id = %s", (student_id,))
+    cursor.execute("DELETE FROM students WHERE id = %s", (student_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 
 def print_students():
     students = list_students()
@@ -119,6 +135,22 @@ def handle_add_student():
         return
     student_id = add_student(name)
     print(f"Added {name} with id {student_id}.\n")
+
+def handle_delete_student():
+    print_students()
+    try:
+        student_id = int(input("Student id to delete: ").strip())
+    except ValueError:
+        print("Invalid id.\n")
+        return
+
+    confirm = input(f"Are you sure you want to delete student {student_id} and all their grades? (y/n): ").strip().lower()
+    if confirm != "y":
+        print("Cancelled.\n")
+        return
+
+    delete_student(student_id)
+    print("Student deleted.\n")
 
 
 def handle_add_grade():
@@ -168,7 +200,8 @@ Student Grade Book
 2. Add grade
 3. View a student's grades + average
 4. List all students
-5. Exit
+5. Delete a student
+6. Exit
 """
     while True:
         print(menu)
@@ -183,6 +216,8 @@ Student Grade Book
         elif choice == "4":
             print_students()
         elif choice == "5":
+            handle_delete_student()
+        elif choice == "6":
             print("Goodbye!")
             break
         else:
